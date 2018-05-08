@@ -10,9 +10,11 @@ def get_data(filename):
     with open(filename, 'r') as csvfile:
         csvFileReader = csv.reader(csvfile)
         next(csvFileReader) # Skip column headers
+        int day = 0
         for row in csvFileReader:
-            dates.append(int(row[0]))
-            prices.append(float(row[1]))
+            day += 1
+            dates.append(day)
+            prices.append(float(row[5]))
     return
 
 # dates: the list of dates in integer type
@@ -37,3 +39,7 @@ def show_plot(dates, prices):
     plt.plot(dates, linear_mod.predict(dates), color='blue', linewidth=3)
     plt.show()
     return
+
+get_data('FB.csv')
+predicted_price, coefficient, constant = predict_price(dates, prices, 366)
+print ("{0}, {1}, {2}".format(predicted_price, coefficient, constant))
