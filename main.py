@@ -3,14 +3,14 @@ import numpy as np
 from sklearn import linear_model
 import matplotlib.pyplot as plt
 
-dates = [26, 25, 24, 23, 22, 19, 18, 17, 16, 12, 11, 10, 9, 8, 5, 4, 3, 2, 1]
-prices = [708.58, 700.01, 688.92, 701.45, 707.45, 695.03, 710.0, 699.0, 692.98, 690.26, 675.0, 686.86, 672.32, 667.85, 703.87, 722.81, 770.22, 784.5, 750.46]
+dates = []
+prices = []
 
 def get_data(filename):
     with open(filename, 'r') as csvfile:
         csvFileReader = csv.reader(csvfile)
         next(csvFileReader) # Skip column headers
-        int day = 0
+        day = 0
         for row in csvFileReader:
             day += 1
             dates.append(day)
@@ -41,5 +41,5 @@ def show_plot(dates, prices):
     return
 
 get_data('FB.csv')
-predicted_price, coefficient, constant = predict_price(dates, prices, 366)
+predicted_price, coefficient, constant = predict_price(dates, prices, 255)
 print ("{0}, {1}, {2}".format(predicted_price, coefficient, constant))
