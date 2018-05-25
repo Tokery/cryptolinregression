@@ -43,3 +43,4 @@ def show_plot(dates, prices):
 get_data('FB.csv')
 predicted_price, coefficient, constant = predict_price(dates, prices, 255)
 print ("{0}, {1}, {2}".format(predicted_price, coefficient, constant))
+# Just sell or buy if too high or low compared to linear regression
