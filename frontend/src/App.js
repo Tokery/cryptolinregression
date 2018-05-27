@@ -5,14 +5,19 @@ import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+
+    this.data = [];
+    for (let i = 0; i < 120; i++) {
+      this.data.push([i, i / 5.0 + 10.0 * Math.sin(i / 3.0),
+        30.0 - i / 5.0 - 10.0 * Math.sin(i / 3.0 + 1.0)]);
+    }
+  }
   componentDidMount(){
     const g = new Dygraph('graph',
-    `Date,A,B
-    2016/01/01,10,20
-    2016/07/01,20,10
-    2016/12/31,40,30
-    `, {
-      fillGraph: true
+    this.data, {
+      fillGraph: true,
     });
   }
   render() {
@@ -25,7 +30,9 @@ class App extends Component {
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
-        <div id="graph"></div>
+        <div style={{ position: 'relative', width: 'inherit', height: '500px' }}>
+          <div id="graph" style={{ position: 'absolute', bottom: '10px', right: '10px', left: '10px', top: '10px'}}></div>
+        </div>
       </div>
     );
   }
