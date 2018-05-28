@@ -9,9 +9,10 @@ class App extends Component {
     super(props);
 
     this.data = [];
-    for (let i = 0; i < 120; i++) {
-      this.data.push([i, i / 5.0 + 10.0 * Math.sin(i / 3.0),
-        30.0 - i / 5.0 - 10.0 * Math.sin(i / 3.0 + 1.0)]);
+    const t = new Date();
+    for (var i = 10; i >= 0; i--) {
+      var x = new Date(t.getTime() - i * 1000);
+      this.data.push([x, Math.random()]);
     }
   }
   componentDidMount(){
@@ -19,6 +20,14 @@ class App extends Component {
     this.data, {
       fillGraph: true,
     });
+    const parent = this;
+    // It sucks that these things aren't objects, and we need to store state in window.
+    window.intervalId = setInterval(function() {
+      var x = new Date();  // current time
+      var y = Math.random();
+      parent.data.push([x, y]);
+      g.updateOptions( { 'file': parent.data } );
+    }, 1000);
   }
   render() {
     return (
