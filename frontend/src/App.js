@@ -14,6 +14,11 @@ class App extends Component {
       var x = new Date(t.getTime() - i * 1000);
       this.data.push([x, Math.random()]);
     }
+
+    // The following should be moved to Redux
+    this.state = {
+      wsMessage: '',
+    }
   }
   componentDidMount(){
     const g = new Dygraph('graph',
@@ -28,6 +33,20 @@ class App extends Component {
       parent.data.push([x, y]);
       g.updateOptions( { 'file': parent.data } );
     }, 1000);
+    
+    const host = "ws://localhost:8000/";
+    this.socket = new WebSocket(host);
+
+    this.socket.onopen = () => {
+      console.log('Socket opened!!');
+      this.socket.send(JSON.stringify({ message: 'Hello' }));
+    }
+    
+    this.socket.onmessage = (message) => {
+      console.log('Received ', message);
+      this.setState({ wsMessage: message });
+    }
+
   }
   render() {
     return (
