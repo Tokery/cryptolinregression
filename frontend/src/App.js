@@ -9,7 +9,7 @@ class App extends Component {
     super(props);
 
     // So how to populate this to begin with???
-    this.data = [[new Date("2017-01-03"), 116.860001, 116.860001]];
+    this.data = [[new Date("2017-01-03"), 10, 10]];
 
     // The following should be moved to Redux
     this.state = {
