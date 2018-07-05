@@ -7,17 +7,19 @@ function PurchaseHistory (props) {
     </div>
     <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
       <ul className="list-group list-group-flush">
+        <li className="list-group-item list-group-item-success">Bought</li>
         { props.bought.map(value =>
-          <li className="list-group-item">Bought: {value}</li>
+          <li className="list-group-item">{value}</li>
         )}
       </ul>
       <ul className="list-group list-group-flush">
+        <li className="list-group-item list-group-item-danger">Sold</li>
         { props.sold.map(value =>
-          <li className="list-group-item">Sold: {value}</li>
+          <li className="list-group-item">{value}</li>
         )}
       </ul>
     </div>
-  </div>)
+  </div>);
 }
 
 export default PurchaseHistory;

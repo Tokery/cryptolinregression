@@ -37,16 +37,6 @@ class App extends Component {
     this.data, {
       fillGraph: false,
       labels: ["Time", "Price", "Prediction"],
-      underlayCallback: function(canvas, area, g) {
-        var bottom_left = g.toDomCoords(new Date("2017-01-04"), -20);
-        var top_right = g.toDomCoords(new Date("2017-01-05"), +20);
-
-        var left = bottom_left[0];
-        var right = top_right[0];
-
-        canvas.fillStyle = "rgba(255, 255, 102, 1.0)";
-        canvas.fillRect(left, area.y, right - left, area.h);
-      }
     });
   }
 
