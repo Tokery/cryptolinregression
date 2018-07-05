@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import Dygraph from 'dygraphs';
+import { Button } from 'react-bootstrap';
 
-import logo from './logo.svg';
 import './App.css';
+import PurchaseHistory from './components/PurchaseHistory'; 
 
 class App extends Component {
   constructor(props) {
@@ -17,7 +18,14 @@ class App extends Component {
       bought: [],
       sold: [],
       profit: 0,
-    }
+      user: {
+        bought: [],
+        sold: [],
+        profit: 0
+      }
+    };
+    this.buy = this.buy.bind(this);
+    this.sell = this.sell.bind(this);
   }
   componentDidMount(){
     this.drawInitialGraph();
@@ -30,10 +38,8 @@ class App extends Component {
       fillGraph: false,
       labels: ["Time", "Price", "Prediction"],
       underlayCallback: function(canvas, area, g) {
-        console.log('Called me');
         var bottom_left = g.toDomCoords(new Date("2017-01-04"), -20);
         var top_right = g.toDomCoords(new Date("2017-01-05"), +20);
-        console.log(bottom_left, area);
 
         var left = bottom_left[0];
         var right = top_right[0];
@@ -49,13 +55,11 @@ class App extends Component {
     this.socket = new WebSocket(host);
 
     this.socket.onopen = () => {
-      console.log('Socket opened!!');
       this.socket.send(JSON.stringify({ message: 'Ready for data' }));
     }
     
     this.socket.onmessage = (message) => {
       message = JSON.parse(message.data);
-      console.log('Received ', message);
       this.setState({ wsMessage: message });
 
       const { x, y, prediction, error } = message; 
@@ -82,12 +86,33 @@ class App extends Component {
     }
   }
 
+  buy() {
+    const currentPrice = this.state.wsMessage.y;
+    const profit =  this.state.user.profit - currentPrice;
+    const bought = this.state.user.bought;
+    bought.push(currentPrice);
+    const newUserObj = Object.assign(this.state.user, { profit, bought });
+    this.setState ({
+      user: newUserObj,
+    });
+  }
+
+  sell() {
+    const currentPrice = this.state.wsMessage.y;
+    const profit =  this.state.user.profit + currentPrice;
+    const sold = this.state.user.sold;
+    sold.push(currentPrice);
+    const newUserObj = Object.assign(this.state.user, { profit, sold });
+    this.setState ({
+      user: newUserObj,
+    });
+  }
+
   render() {
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
+          <h1 className="App-title">cryptolinregression-v2</h1>
         </header>
         <p className="App-intro">
           Last price: {this.state.wsMessage.y}
@@ -95,20 +120,19 @@ class App extends Component {
         <div style={{ position: 'relative', width: 'inherit', height: '500px' }}>
           <div id="graph" style={{ position: 'absolute', bottom: '10px', right: '10px', left: '10px', top: '10px'}}></div>
         </div>
-        <button onClick={this.buy}>Buy</button>
-        <button onClick={this.sell}>Sell</button>
-        <div>
-          Profit: {this.state.profit}
-        </div>
-        <div>
-          { this.state.bought.map(value => {
-            return <div>Bought: {value}</div>
-          })}
-        </div>
-        <div>
-          { this.state.sold.map(value => {
-            return <div>Sold: {value}</div>
-          })}
+        <button className="btn btn-success" onClick={this.buy}>Buy</button>
+        <button className="btn btn-danger" onClick={this.sell}>Sell</button>        
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+          <PurchaseHistory 
+            profit={this.state.profit}
+            bought={this.state.bought}
+            sold={this.state.sold}
+          />
+          <PurchaseHistory 
+            profit={this.state.user.profit}
+            bought={this.state.user.bought}
+            sold={this.state.user.sold}
+          />
         </div>
       </div>
     );
