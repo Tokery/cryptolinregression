@@ -11,6 +11,10 @@ from scipy import stats
 from scipy.stats import t
 from functools import reduce
 
+def lin_regress_prediction_interval(s_e, x, x_bar, n, s_xx, p):
+    "Calculate the prediction interval for linear regression"
+    return s_e * math.sqrt(1 + (1 / n) + ((x - x_bar)**2)/s_xx) * t.ppf((1-p) / 2, n - 2)
+
 class DataConsumer(WebsocketConsumer):
     def _getFileData(self):
         with open('./FB.csv', newline='') as csvfile:
@@ -35,11 +39,15 @@ class DataConsumer(WebsocketConsumer):
         # dates = np.reshape(self.dates, (len(self.dates), 1)) # convert to nx1 matrix (n rows, 1 column)
         # prices = np.reshape(self.prices, (len(self.prices), 1)) 
         #self.linear_mod.fit(dates, prices) # fit the data points to the model (Learn from the model)
+
+        # std_err is the standard error (deviation) of the estimated gradient
+        # s_e is the estimator of the standard deviation of the population
         self.x_bar = sum(self.dates) / len(self.dates)
         self.s_xx = reduce((lambda x, y: x + (y - self.x_bar)**2), self.dates)
         self.slope, self.intercept, _, _, std_err = stats.linregress(self.dates, self.prices)
+        # The following is calculated knowing that the esimator of the gradient has a standard deviation of pop_std_dev/sqrt(s_xx)
+        # s_e is then used in place of pop_std_dev
         self.s_e = std_err * math.sqrt(self.s_xx)
-        
         
 
     def disconnect(self, close_code):
@@ -55,6 +63,7 @@ class DataConsumer(WebsocketConsumer):
                 'y': price,
                 # 'prediction': self.linear_mod.predict(index + 1)[0][0]
                 'prediction': self.slope * index + self.intercept,
-                'error': self.s_e * math.sqrt(1 + (1 / len(self.dates)) + ((index - self.x_bar)**2)/self.s_xx) * t.ppf(0.025, len(self.dates)- 2)
+                # Calculate the 95% confidence interval of the prediction
+                'error': lin_regress_prediction_interval(self.s_e, index, self.x_bar, len(self.dates), self.s_xx, 0.95)
             }))
             time.sleep(0.25)

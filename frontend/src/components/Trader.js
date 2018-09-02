@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Dygraph from 'dygraphs';
-import { Button } from 'react-bootstrap';
 
 import '../App.css';
 import PurchaseHistory from './PurchaseHistory'; 
@@ -9,8 +8,8 @@ class Trader extends Component {
   constructor(props) {
     super(props);
 
-    // So how to populate this to begin with???
     this.data = [[new Date("2017-01-03"), 10, 10]];
+    this.fresh = true;
 
     // The following should be moved to Redux
     this.state = {
@@ -22,7 +21,7 @@ class Trader extends Component {
         bought: [],
         sold: [],
         profit: 0
-    }
+    },
     };
     this.buy = this.buy.bind(this);
     this.sell = this.sell.bind(this);
@@ -73,6 +72,10 @@ class Trader extends Component {
         });
       }
       this.data.push([new Date(x), y, prediction]);
+      if (this.fresh) {
+        this.data = this.data.slice(1);
+        this.fresh = false;
+      }
       this.g.updateOptions({ 'file': this.data });
     }
   }
@@ -115,11 +118,13 @@ class Trader extends Component {
             profit={this.state.profit}
             bought={this.state.bought}
             sold={this.state.sold}
+            player={'Computer'}
           />
           <PurchaseHistory 
             profit={this.state.user.profit}
             bought={this.state.user.bought}
             sold={this.state.user.sold}
+            player={'You'}
           />
         </div>
       </div>

@@ -15,7 +15,7 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <h1 className="App-title">cryptolinregression-v2</h1>
+          <h1 className="App-title">AI Trader</h1>
         </header>
         { this.state.intro ? 
           <div>
