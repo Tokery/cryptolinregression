@@ -44,10 +44,11 @@ class DataConsumer(WebsocketConsumer):
         # s_e is the estimator of the standard deviation of the population
         self.x_bar = sum(self.dates) / len(self.dates)
         self.s_xx = reduce((lambda x, y: x + (y - self.x_bar)**2), self.dates)
-        self.slope, self.intercept, _, _, std_err = stats.linregress(self.dates, self.prices)
-        # The following is calculated knowing that the esimator of the gradient has a standard deviation of pop_std_dev/sqrt(s_xx)
-        # s_e is then used in place of pop_std_dev
-        self.s_e = std_err * math.sqrt(self.s_xx)
+        self.slope, self.intercept, _, _, std_err_gradient = stats.linregress(self.dates, self.prices)
+        # The following is calculated knowing that the estimator of the gradient has a standard deviation of pop_std_dev/sqrt(s_xx)
+        # s_e is the residual standard error (An estimate for the std. dev of the errors)
+        # Very similar to std. dev of residuals
+        self.s_e = std_err_gradient * math.sqrt(self.s_xx)
         
 
     def disconnect(self, close_code):
