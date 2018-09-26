@@ -1,8 +1,8 @@
 from channels.generic.websocket import WebsocketConsumer
 from get_stock_data import get_stock_data
+from functools import reduce
 import json
 import time
-import csv
 import os
 import math
 
@@ -17,22 +17,12 @@ def lin_regress_prediction_interval(s_e, x, x_bar, n, s_xx, p):
 class DataConsumer(WebsocketConsumer):
     def _getFileData(self):
         stock_data = get_stock_data("FB", "2017-01-03", "2017-12-29")
-        day = 0
-        for row in stock_reader:
-            day += 1
-            self.dates.append(day)
-            self.realDays.append(row[0])
-            self.prices.append(float(row[5]))
-        # with open('./FB.csv', newline='') as csvfile:
-        #     stock_reader = csv.reader(csvfile)
-        #     # Skip header row
-        #     next(stock_reader)
-        #     day = 0
-        #     for row in stock_reader:
-        #         day += 1
-        #         self.dates.append(day)
-        #         self.realDays.append(row[0])
-        #         self.prices.append(float(row[5]))
+        idx = 0
+        for row in stock_data.itertuples():
+            idx += 1
+            self.dates.append(idx)
+            self.realDays.append(row.Index.strftime("%Y-%m-%d"))
+            self.prices.append(float(row._5))
 
     def connect(self):
         self.accept()
